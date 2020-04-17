@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View,
     Text,
     ScrollView,
     TouchableNativeFeedback,
-    Image
+    Image,
+    RefreshControl
 } from 'react-native';
 import styled from 'styled-components';
 
@@ -15,9 +16,8 @@ const Container = styled.ScrollView`
 
 const RecipeItem = styled.View`
     margin-bottom: 32px;
-    border-radius: 10px;
+    border-radius: 20px;
     background-color: #ffffff;
-    elevation: 3;
     margin-right: 30px;
     margin-left: 30px;
 `
@@ -42,8 +42,8 @@ const RecipeLeftItem = styled.View`
 `
 
 const RecipeImage = styled.Image`
-    height: 170px;
-    border-radius: 10px;
+    height: 190px;
+    border-radius: 20px;
 `
 
 const RecipePrice = styled.Text`
@@ -61,20 +61,25 @@ const RecipeBottomBar = styled.View`
 
 export default Header = (props) => {
     return(
-        <Container>
+        <Container
+            refreshControl={<RefreshControl refreshing={props.refreshing} onRefresh={props.onRefresh} />}
+        >
             {props.recipes.map((recipe, index) => {
                 return(
                     <TouchableNativeFeedback
                         key={index}
+                        onPress={() => {
+                            props.navigation.navigate('Recipe', {recipe})
+                        }}
                     >
                         <RecipeItem>
-                            <RecipeImage source={{uri: recipe.img}} />
+                            <RecipeImage source={{uri: recipe.image}} />
                             <RecipeBottomBar>
                                 <RecipeLeftItem>
                                     <RecipeTitle>{recipe.title}</RecipeTitle>
-                                    <RecipeCalories>{recipe.calories} kcal</RecipeCalories>
+                                    <RecipeCalories>{recipe.totalCalories} kcal</RecipeCalories>
                                 </RecipeLeftItem>
-                                <RecipePrice>${recipe.price}</RecipePrice>
+                                <RecipePrice>$ {recipe.totalPrice}</RecipePrice>
                             </RecipeBottomBar>
                         </RecipeItem>
                     </TouchableNativeFeedback>

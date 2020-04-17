@@ -11,23 +11,36 @@ import {
     useSelector,
     useDispatch
 } from 'react-redux'
+import Icon from 'react-native-vector-icons/EvilIcons';
 
 const Container = styled.View`
     background-color: #ffffff;
     flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+`
+
+
+const FBButton = styled.View`
+    padding: 16px;
+    background-color: #617FE8;
+    elevation: 5;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
 `
 
-const FBButton = styled.View`
-    padding: 24px;
-    background-color: #617FE8;
-    elevation: 5;
-    border-radius: 10px;
+const FBIcon = styled(Icon)`
+    color: #ffffff;
+    margin-right: 8px;
 `
 
 const FBButtonText = styled.Text`
-    font-size: 24px;
+    font-size: 16px;
     color: #ffffff;
 `
 
@@ -66,6 +79,7 @@ const Login = ({navigation}) => {
                 }}
             >
                 <FBButton>
+                    <Icon name="sc-facebook" size={32} color="#ffffff" />
                     <FBButtonText>
                         Continue with Facebook
                     </FBButtonText>

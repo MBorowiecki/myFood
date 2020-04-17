@@ -8,6 +8,7 @@ import reducers from './reducers';
 import Home from './screens/Home';
 import Login from './screens/Login';
 import AddRecipe from './screens/AddRecipeModal';
+import Recipe from './screens/Recipe'
 
 const MainStack = createStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
           <MainStack.Screen name="Home" component={Home} />
           <MainStack.Screen name="Login" component={Login} />
           <MainStack.Screen name="AddRecipe" component={AddRecipe} />
+          <MainStack.Screen name="Recipe" component={Recipe} />
         </MainStack.Navigator>
       </NavigationContainer>
     </Provider>

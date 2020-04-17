@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
     View,
     Text,
@@ -11,9 +11,14 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import styled from 'styled-components';
 import * as ImagePicker from 'expo-image-picker';
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+import 'firebase/storage';
+import firebaseConfig from '../config/firebase'; 
 import {
-    produce
-} from 'immer'
+    useSelector
+} from 'react-redux'
+import axios from 'axios'
 
 const MainContainer = styled.View`
     flex: 1;
@@ -88,74 +93,70 @@ const SubmitText = styled.Text`
 `
 
 const Forms = styled.ScrollView`
-    margin-right: 16px;
-    margin-left: 16px;
     margin-top: 16px;
     flex-grow: 1;
 `
 
-const AddRecipeTitle = styled.TextInput`
+const Title = styled.TextInput`
+    color: #020102;
     font-size: 26px;
-    color: #000000;
-    margin: 16px;
+    margin-right: 16px;
 `
 
-const IngredientsLabelContainer = styled.View`
+const TotalCalories = styled.TextInput`
+    color: #767676;
+    font-size: 16px;
+`
+
+const TitleBarLeft = styled.View`
+    display: flex;
+    flex-direction: column;
+    margin-left: 16px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    flex-grow: 1;
+`
+
+const Price = styled.TextInput`
+    color: #20A70A;
+    font-size: 32px;
+    margin-right: 16px;
+`
+
+const TitleBar = styled.View`
     display: flex;
     flex-direction: row;
-    margin: 16px;
     justify-content: center;
     align-items: center;
-`
-
-const IngredientsLabel = styled.Text`
-    flex-grow: 1;
-    color: #000000;
-    font-size: 20px;
-`
-
-const IngredientsIcon = styled(MaterialIcons)`
-    color: #000000;
-`
-
-const IngredientsList = styled.View`
+    padding: 8px;
+    background-color: #e5e5e5;
+    border-radius: 10px;
     margin-left: 16px;
     margin-right: 16px;
 `
 
-const IngredientItem = styled.View`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 8px;
-    margin-left: 8px;
-    margin-right: 8px;
+const ContentContainer = styled.ScrollView`
+    padding: 16px;
 `
 
-const IngredientIndex = styled.Text`
-    color: #000000;
-    font-size: 18px;
-    margin-right: 8px;
-`
+const Label = styled.TextInput`
+    margin-top: 16px;
+    color: #888888;
+    font-size: 26px;
+` 
 
-const IngredientName = styled.TextInput`
-    color: #000000;
-    font-size: 18px;
-    flex-grow: 1;
-`
-
-const RemoveIngredientIcon = styled(MaterialIcons)`
-    color: #000000;
+const MetaInfo = styled.TextInput` /* Ingredients, steps to reproduce and description */
+    margin-top: 8px;
+    color: #444444;
+    font-size: 20px;
 `
 
 const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [5, 3],
-        quality: 1
+        aspect: [6, 4],
+        quality: 0.4
     })
 
     if(result.uri){
@@ -165,10 +166,53 @@ const pickImage = async () => {
     }
 }
 
-export default AddRecipeModalComp = ({open, setModalOpen}) => {
+const AddToFirebase = async (db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, image, totalCalories, totalPrice) => {
+    if(db && profile && title && pickedImage && ingredients && stepsToProduce && shortDescription && navigation && storage && image && totalCalories && totalPrice){
+        const res = await fetch(image.uri);
+        const blob = await res.blob();
+        let date = Date.now();
+        
+        let uploadFile = storage.ref().child(profile.id + "/" + title + '-' + date + ".jpg").put(blob)
+        .then(snap => {
+            snap.ref.getDownloadURL().then(url => {
+                db.collection('recipes').add({
+                    title,
+                    ingredients,
+                    stepsToProduce,
+                    shortDescription,
+                    owner: profile.id,
+                    image: url,
+                    totalCalories,
+                    totalPrice
+                }).then(docRef => {
+                    navigation.goBack();
+                }).catch(err => {
+                    console.log(err);
+                    navigation.goBack();
+                })
+            })
+        })
+    }
+}
+
+export default AddRecipeModalComp = ({open, setModalOpen, navigation}) => {
     const [pickedImage, setPickedImage] = useState(null);
     const [title, setTitle] = useState("");
-    const [ingredients, setIngredients] = useState([]);
+    const [ingredients, setIngredients] = useState("");
+    const [stepsToProduce, setStepsToProduce] = useState("");
+    const [shortDescription, setShortDescription] = useState("");
+    const [totalCalories, setTotalCalories] = useState("");
+    const [totalPrice, setTotalPrice] = useState("");
+    const profile = useSelector(state => state);
+
+    const db = firebase.firestore();
+    const storage = firebase.storage()
+
+    useEffect(() => {
+        if(!firebase.apps.length > 0){
+            firebase.initializeApp(firebaseConfig);
+        }
+    }, [])
 
     return(
         <MainContainer>
@@ -179,7 +223,7 @@ export default AddRecipeModalComp = ({open, setModalOpen}) => {
                     }}
                 >
                 {pickedImage ?
-                    <Image
+                    <AddRecipeImage
                         source={{isStatic: true, uri: pickedImage.uri}}
                     />
                     :
@@ -192,69 +236,66 @@ export default AddRecipeModalComp = ({open, setModalOpen}) => {
                 </TouchableNativeFeedback>
             <Content>
                 <Forms>
-                    <AddRecipeTitle
-                        placeholder="Title..."
-                        placeholderTextColor="#7f7f7f"
-                        onChangeText={text => setTitle(text)}
-                        value={title}
-                        />
-                    <IngredientsLabelContainer>
-                        <IngredientsLabel>
-                            Ingredients
-                        </IngredientsLabel>
-                        <TouchableNativeFeedback
-                            onPress={() => {
-                                setIngredients(ingredients => {
-                                    return [
-                                        ...ingredients,
-                                        ""
-                                    ]
-                                })
+                    <TitleBar>
+                        <TitleBarLeft>
+                            <Title
+                                placeholder="Title..."
+                                placeholderTextColor="#7f7f7f"
+                                onChangeText={text => setTitle(text)}
+                                value={title}
+                            />
+                            <TotalCalories
+                                placeholder="Total calories..."
+                                onChangeText={(text) => {
+                                    setTotalCalories(text)
+                                }}
+                                value={totalCalories}
+                            />
+                        </TitleBarLeft>
+                        <Price
+                            placeholder="0 $"
+                            onChangeText={text => {
+                                setTotalPrice(text)
                             }}
-                        >
-                            <IngredientsIcon name="add" size={28} />
-                        </TouchableNativeFeedback>
-                    </IngredientsLabelContainer>
-                    <IngredientsList>
-                        {ingredients.map((ingredient, index) => {
-                            return(
-                                <IngredientItem key={index}>
-                                    <IngredientIndex>
-                                        {index + 1}.
-                                    </IngredientIndex>
-                                    <IngredientName
-                                        onChangeText={text => {
-                                            setIngredients(_ing => {
-                                                produce(_ing, v => {
-                                                    v[index] = text;
-                                                })
-                                            })
-                                        }}
-                                        placeholder="Ingredient..."
-                                        placeholderTextColor="#7f7f7f"
-                                        value={ingredients[index]}
-                                    />
-                                    <TouchableNativeFeedback
-                                        onPress={() => {
-                                            let ingredients = ingredients;
-                                            ingredients = ingredients.filter((val, ind, arr) => {
-                                                return val !== ingredient
-                                            })
-                                            console.log(ingredients)
-                                            setIngredients(ingredients);
-                                        }}
-                                        >
-                                        <RemoveIngredientIcon size={24} name="delete" />
-                                    </TouchableNativeFeedback>
-                                </IngredientItem>
-                            )
-                        })}
-                    </IngredientsList>
+                            value={totalPrice}
+                        />
+                    </TitleBar>
+                    <ContentContainer>
+                        <Label>Ingredients</Label>
+                        <MetaInfo
+                            onChangeText={text => {
+                                setIngredients(text)
+                            }}
+                            placeholder="Ingredients..."
+                            value={ingredients}
+                            multiline
+                            numberOfLines={1}
+                        />
+                        <Label>Steps to produce</Label>
+                        <MetaInfo
+                            multiline
+                            numberOfLines={1}
+                            placeholder="Steps to produce..."
+                            onChangeText={(text) => {
+                                setStepsToProduce(text)
+                            }}
+                            value={stepsToProduce}
+                        />
+                        <Label>Description</Label>
+                        <MetaInfo
+                            placeholder="Short description..."
+                            multiline
+                            onChangeText={(text) => {
+                                setShortDescription(text);
+                            }}
+                            value={shortDescription}
+                        />
+                    </ContentContainer>
                 </Forms>
                 <Actions>
                     <TouchableNativeFeedback
                         onPress={()=> {
-
+                            AddToFirebase(db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, pickedImage, totalCalories, totalPrice);
                         }}
                     >
                     <SubmitButton>
@@ -264,8 +305,8 @@ export default AddRecipeModalComp = ({open, setModalOpen}) => {
                     <TouchableNativeFeedback
                         onPress={() => {
                             setPickedImage(null);
-                            setModalOpen(false);
                             setTitle("")
+                            navigation.goBack();
                         }}
                     >
                     <CancelButton>
