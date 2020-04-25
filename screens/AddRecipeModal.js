@@ -139,7 +139,7 @@ const ContentContainer = styled.ScrollView`
     padding: 16px;
 `
 
-const Label = styled.TextInput`
+const Label = styled.Text`
     margin-top: 16px;
     color: #888888;
     font-size: 26px;
