@@ -5,9 +5,11 @@ import {
     Text,
     Image,
     ScrollView,
-    ImageBackground
+    ImageBackground,
+    TouchableWithoutFeedback,
+    TouchableNativeFeedback
 } from 'react-native'
-import { TouchableNativeFeedback } from 'react-native-gesture-handler'
+
 
 const Container = styled.View`
     display: flex;
@@ -36,7 +38,7 @@ const TitleBarLeft = styled.View`
     flex-grow: 1;
 `
 
-const RecipeImage = styled.ImageBackground`
+const RecipeImage = styled.Image`
     flex-grow: 1;
     min-height: 250px;
 `
@@ -92,9 +94,7 @@ const Recipe = (props) => {
 
     return(
         <Container>
-            <RecipeImage source={{uri: recipe.image}}>
-
-            </RecipeImage>
+            <RecipeImage source={{uri: recipe.image}} />
             <ContentContainer>
                 <TitleBar>
                     <TitleBarLeft>
@@ -109,12 +109,12 @@ const Recipe = (props) => {
                 <MetaInfo multiline>{recipe.stepsToProduce}</MetaInfo>
                 <Label>Description</Label>
                 <MetaInfo multiline>{recipe.shortDescription}</MetaInfo>
-                <TouchableNativeFeedback
+                {/*<TouchableNativeFeedback
                 >
                     <MakeItButton>
                         <MakeItButtonText>Let's make it!</MakeItButtonText>
                     </MakeItButton>
-                </TouchableNativeFeedback>
+                </TouchableNativeFeedback>*/}
             </ContentContainer>
         </Container>
     )

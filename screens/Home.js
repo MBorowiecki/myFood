@@ -91,8 +91,7 @@ export default Home = ({navigation}) => {
 
     return(
         <Container>
-            <StatusBar barStyle="dark-content" />
-            <Header screenTitle="My Recipes" />
+            <StatusBar barStyle="light-content" />
             <Recipes recipes={recipes} onRefresh={onRefresh} refreshing={refreshing} navigation={navigation} />
             <TouchableNativeFeedback
                 background={TouchableNativeFeedback.Ripple('white', false)}

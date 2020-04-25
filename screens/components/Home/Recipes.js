@@ -14,6 +14,30 @@ const Container = styled.ScrollView`
     height: 100%;
 `
 
+const CategoryContainer = styled.View`
+    background-color: ${props => props.bgColor};
+    width: 100%;
+    padding-top: 16px;
+`
+
+const CategoryTitle = styled.Text`
+    color: #ffffff;
+    font-size: 32px;
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 15px;
+    margin-bottom: 32px;
+    background-color: ${props => props.bgColor};
+`
+
+const BottomSpacing = styled.View`
+    height: 80px;
+    width: 100%;
+`
+
 const RecipeItem = styled.View`
     margin-bottom: 32px;
     border-radius: 20px;
@@ -64,27 +88,97 @@ export default Header = (props) => {
         <Container
             refreshControl={<RefreshControl refreshing={props.refreshing} onRefresh={props.onRefresh} />}
         >
-            {props.recipes.map((recipe, index) => {
-                return(
-                    <TouchableNativeFeedback
-                        key={index}
-                        onPress={() => {
-                            props.navigation.navigate('Recipe', {recipe})
-                        }}
+            {props.recipes.filter(recipe => recipe['category'] === 0).length > 0 && 
+                <CategoryContainer
+                    bgColor="#e0632400"
+                >
+                    <CategoryTitle bgColor="#e06324">Breakfast</CategoryTitle>
+                {props.recipes.map((recipe, index) => {
+                    if(recipe.category === 0){
+                        return(
+                            <TouchableNativeFeedback
+                                key={index}
+                                onPress={() => {
+                                    props.navigation.navigate('Recipe', {recipe})
+                                }}
+                            >
+                                <RecipeItem>
+                                    <RecipeImage source={{uri: recipe.image}} />
+                                    <RecipeBottomBar>
+                                        <RecipeLeftItem>
+                                            <RecipeTitle>{recipe.title}</RecipeTitle>
+                                            <RecipeCalories>{recipe.totalCalories} kcal</RecipeCalories>
+                                        </RecipeLeftItem>
+                                        <RecipePrice>$ {recipe.totalPrice}</RecipePrice>
+                                    </RecipeBottomBar>
+                                </RecipeItem>
+                            </TouchableNativeFeedback>
+                        )
+                    }
+                })}
+                </CategoryContainer>
+            }
+            {props.recipes.filter(recipe => recipe['category'] === 1).length > 0 && 
+                <CategoryContainer
+                    bgColor="#24a4e000"
+                >
+                    <CategoryTitle bgColor="#24a4e0">Dinner</CategoryTitle>
+                {props.recipes.map((recipe, index) => {
+                    if(recipe.category === 1){
+                        return(
+                            <TouchableNativeFeedback
+                                key={index}
+                                onPress={() => {
+                                    props.navigation.navigate('Recipe', {recipe})
+                                }}
+                            >
+                                <RecipeItem>
+                                    <RecipeImage source={{uri: recipe.image}} />
+                                    <RecipeBottomBar>
+                                        <RecipeLeftItem>
+                                            <RecipeTitle>{recipe.title}</RecipeTitle>
+                                            <RecipeCalories>{recipe.totalCalories} kcal</RecipeCalories>
+                                        </RecipeLeftItem>
+                                        <RecipePrice>$ {recipe.totalPrice}</RecipePrice>
+                                    </RecipeBottomBar>
+                                </RecipeItem>
+                            </TouchableNativeFeedback>
+                        )
+                    }
+                })}
+                </CategoryContainer>
+                }
+                {props.recipes.filter(recipe => recipe['category'] === 2).length > 0 && 
+                    <CategoryContainer
+                        bgColor="#e0248500"
                     >
-                        <RecipeItem>
-                            <RecipeImage source={{uri: recipe.image}} />
-                            <RecipeBottomBar>
-                                <RecipeLeftItem>
-                                    <RecipeTitle>{recipe.title}</RecipeTitle>
-                                    <RecipeCalories>{recipe.totalCalories} kcal</RecipeCalories>
-                                </RecipeLeftItem>
-                                <RecipePrice>$ {recipe.totalPrice}</RecipePrice>
-                            </RecipeBottomBar>
-                        </RecipeItem>
-                    </TouchableNativeFeedback>
-                )
-            })}
+                        <CategoryTitle bgColor="#e02485">Supper</CategoryTitle>
+                    {props.recipes.map((recipe, index) => {
+                        if(recipe.category === 2){
+                            return(
+                                <TouchableNativeFeedback
+                                    key={index}
+                                    onPress={() => {
+                                        props.navigation.navigate('Recipe', {recipe})
+                                    }}
+                                >
+                                    <RecipeItem>
+                                        <RecipeImage source={{uri: recipe.image}} />
+                                        <RecipeBottomBar>
+                                            <RecipeLeftItem>
+                                                <RecipeTitle>{recipe.title}</RecipeTitle>
+                                                <RecipeCalories>{recipe.totalCalories} kcal</RecipeCalories>
+                                            </RecipeLeftItem>
+                                            <RecipePrice>$ {recipe.totalPrice}</RecipePrice>
+                                        </RecipeBottomBar>
+                                    </RecipeItem>
+                                </TouchableNativeFeedback>
+                            )
+                        }
+                    })}
+                    </CategoryContainer>
+                }
+            <BottomSpacing />
         </Container>
     )
 }

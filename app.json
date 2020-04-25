@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "My Food",
-    "slug": "my-food",
+    "name": "Recipes",
+    "slug": "recipes",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -11,7 +11,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Recipes_logo.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -24,7 +24,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.kgsoftware.recipes",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.kgsoftware.recipes",
+      "versionCode": 1
     },
     "description": ""
   }

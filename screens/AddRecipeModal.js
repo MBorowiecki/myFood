@@ -151,6 +151,38 @@ const MetaInfo = styled.TextInput` /* Ingredients, steps to reproduce and descri
     font-size: 20px;
 `
 
+const CategoriesContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    margin: 8px;
+    justify-content: center;
+    align-items: center;
+`
+
+const CategoryContainer = styled.View`
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    margin: 8px;
+    background-color: ${props => props.bgColor};
+    border-radius: 10px;
+`
+
+const CategoryIcon = styled.Image`
+    width: 64px;
+    height: 64px;
+    margin-top: 8px;
+`
+
+const CategoryName = styled.Text`
+    color: #ffffff;
+    font-size: 16px;
+    padding: 4px;
+`
+
 const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -166,8 +198,9 @@ const pickImage = async () => {
     }
 }
 
-const AddToFirebase = async (db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, image, totalCalories, totalPrice) => {
-    if(db && profile && title && pickedImage && ingredients && stepsToProduce && shortDescription && navigation && storage && image && totalCalories && totalPrice){
+const AddToFirebase = async (db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, image, totalCalories, totalPrice, category) => {
+    if(db && profile && title && pickedImage && ingredients && stepsToProduce && shortDescription && navigation && storage && image && totalCalories && totalPrice && category > -1){
+        console.log(category)
         const res = await fetch(image.uri);
         const blob = await res.blob();
         let date = Date.now();
@@ -183,7 +216,8 @@ const AddToFirebase = async (db, profile, title, pickedImage, ingredients, steps
                     owner: profile.id,
                     image: url,
                     totalCalories,
-                    totalPrice
+                    totalPrice,
+                    category
                 }).then(docRef => {
                     navigation.goBack();
                 }).catch(err => {
@@ -203,6 +237,7 @@ export default AddRecipeModalComp = ({open, setModalOpen, navigation}) => {
     const [shortDescription, setShortDescription] = useState("");
     const [totalCalories, setTotalCalories] = useState("");
     const [totalPrice, setTotalPrice] = useState("");
+    const [category, setCategory] = useState(1) // 0 - Breakfast, 1 - Dinner, 2 - Supper
     const profile = useSelector(state => state);
 
     const db = firebase.firestore();
@@ -235,6 +270,38 @@ export default AddRecipeModalComp = ({open, setModalOpen, navigation}) => {
                 }
                 </TouchableNativeFeedback>
             <Content>
+                <CategoriesContainer>
+                    <TouchableNativeFeedback
+                        onPress={() => {
+                            setCategory(0);
+                        }}
+                    >
+                    <CategoryContainer bgColor={category === 0 ? "#b54e1b" : "#e06324"}>
+                        <CategoryIcon source={{uri: "https://www.pngrepo.com/download/169159/breakfast.png"}} />
+                        <CategoryName>Breakfast</CategoryName>
+                    </CategoryContainer>    
+                    </TouchableNativeFeedback>    
+                    <TouchableNativeFeedback
+                        onPress={() => {
+                            setCategory(1);
+                        }}
+                    >
+                    <CategoryContainer bgColor={category === 1 ? "#1c7aa6" : "#24a4e0"}>
+                        <CategoryIcon source={{uri: "https://i.ya-webdesign.com/images/dinner-vector-icon-9.png"}} />
+                        <CategoryName>Dinner</CategoryName>
+                    </CategoryContainer>    
+                    </TouchableNativeFeedback>    
+                    <TouchableNativeFeedback
+                        onPress={() => {
+                            setCategory(2);
+                        }}
+                    >
+                    <CategoryContainer bgColor={category === 2 ? "#ad1c67" : "#e02485"}>
+                        <CategoryIcon source={{uri: "https://www.pngrepo.com/png/250546/170/supper.png"}} />
+                        <CategoryName>Supper</CategoryName>
+                    </CategoryContainer>    
+                    </TouchableNativeFeedback>
+                </CategoriesContainer>
                 <Forms>
                     <TitleBar>
                         <TitleBarLeft>
@@ -295,7 +362,7 @@ export default AddRecipeModalComp = ({open, setModalOpen, navigation}) => {
                 <Actions>
                     <TouchableNativeFeedback
                         onPress={()=> {
-                            AddToFirebase(db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, pickedImage, totalCalories, totalPrice);
+                            AddToFirebase(db, profile, title, pickedImage, ingredients, stepsToProduce, shortDescription, navigation, storage, pickedImage, totalCalories, totalPrice, category);
                         }}
                     >
                     <SubmitButton>
