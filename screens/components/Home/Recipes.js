@@ -20,17 +20,29 @@ const CategoryContainer = styled.View`
     padding-top: 16px;
 `
 
-const CategoryTitle = styled.Text`
-    color: #ffffff;
-    font-size: 32px;
+const CategoryTitleContainer = styled.View`
+    display: flex;
+    flex-direction: row;
     margin-left: 16px;
     margin-right: 16px;
     padding: 8px;
     padding-left: 16px;
     padding-right: 16px;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 32px;
     background-color: ${props => props.bgColor};
+    align-items: center;
+`
+
+const CategoryIcon = styled.Image`
+    width: 48px;
+    height: 48px;
+`
+
+const CategoryName = styled.Text`
+    color: #ffffff;
+    font-size: 32px;
+    margin-left: 8px;
 `
 
 const BottomSpacing = styled.View`
@@ -92,7 +104,10 @@ export default Header = (props) => {
                 <CategoryContainer
                     bgColor="#e0632400"
                 >
-                    <CategoryTitle bgColor="#e06324">Breakfast</CategoryTitle>
+                    <CategoryTitleContainer bgColor="#e06324">
+                        <CategoryIcon source={{uri: "https://www.pngrepo.com/download/169159/breakfast.png"}} />
+                        <CategoryName>Breakfast</CategoryName>
+                    </CategoryTitleContainer>
                 {props.recipes.map((recipe, index) => {
                     if(recipe.category === 0){
                         return(
@@ -122,7 +137,10 @@ export default Header = (props) => {
                 <CategoryContainer
                     bgColor="#24a4e000"
                 >
-                    <CategoryTitle bgColor="#24a4e0">Dinner</CategoryTitle>
+                    <CategoryTitleContainer bgColor="#24a4e0">
+                        <CategoryIcon source={{uri: "https://i.ya-webdesign.com/images/dinner-vector-icon-9.png"}} />
+                        <CategoryName>Dinner</CategoryName>
+                    </CategoryTitleContainer>
                 {props.recipes.map((recipe, index) => {
                     if(recipe.category === 1){
                         return(
@@ -152,7 +170,10 @@ export default Header = (props) => {
                     <CategoryContainer
                         bgColor="#e0248500"
                     >
-                        <CategoryTitle bgColor="#e02485">Supper</CategoryTitle>
+                        <CategoryTitleContainer bgColor="#e02485">
+                            <CategoryIcon source={{uri: "https://www.pngrepo.com/png/250546/170/supper.png"}} />
+                            <CategoryName>Supper</CategoryName>
+                        </CategoryTitleContainer>
                     {props.recipes.map((recipe, index) => {
                         if(recipe.category === 2){
                             return(

@@ -89,6 +89,28 @@ const MakeItButtonText = styled.Text`
     font-size: 24px;
 `
 
+const CategoryContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 16px;
+    background-color: ${props => props.bgColor};
+    border-radius: 10px;
+`
+
+const CategoryIcon = styled.Image`
+    width: 48px;
+    height: 48px;
+`
+
+const CategoryName = styled.Text`
+    color: #ffffff;
+    font-size: 24px;
+    margin-left: 8px;
+`
+
 const Recipe = (props) => {
     const recipe = props.route.params.recipe;
 
@@ -96,6 +118,24 @@ const Recipe = (props) => {
         <Container>
             <RecipeImage source={{uri: recipe.image}} />
             <ContentContainer>
+                {recipe.category === 0 && 
+                    <CategoryContainer bgColor="#e06324">
+                        <CategoryIcon source={{uri: "https://www.pngrepo.com/download/169159/breakfast.png"}} />
+                        <CategoryName>Breakfast</CategoryName>
+                    </CategoryContainer>  
+                }
+                {recipe.category === 1 && 
+                    <CategoryContainer bgColor="#24a4e0">
+                        <CategoryIcon source={{uri: "https://i.ya-webdesign.com/images/dinner-vector-icon-9.png"}} />
+                        <CategoryName>Dinner</CategoryName>
+                    </CategoryContainer>   
+                }
+                {recipe.category === 2 && 
+                    <CategoryContainer bgColor="#e02485">
+                        <CategoryIcon source={{uri: "https://www.pngrepo.com/png/250546/170/supper.png"}} />
+                        <CategoryName>Supper</CategoryName>
+                    </CategoryContainer>    
+                }
                 <TitleBar>
                     <TitleBarLeft>
                         <Title multiline>{recipe.title}</Title>
